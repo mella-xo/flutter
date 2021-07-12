@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gmaps/directions_model.dart';
 import 'package:flutter_gmaps/directions_repository.dart';
@@ -25,60 +23,49 @@ class MyApp extends StatelessWidget {
 
 // <void> means this route returns nothing.
 class _NewPage extends StatefulWidget {
-
-
   @override
   __NewPageState createState() => __NewPageState();
 }
 
 class __NewPageState extends State<_NewPage> {
-
   @override
   Widget build(BuildContext context) {
-    final listTiles = <Widget> [
+    final listTiles = <Widget>[
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
       const ListTile(
         title: Text('Title1'),
         subtitle: Text('Open'),
       ),
       const Divider(),
-
-
     ];
 
     return new Scaffold(
@@ -86,19 +73,11 @@ class __NewPageState extends State<_NewPage> {
         title: new Text("page 1"),
         centerTitle: true,
         backgroundColor: Colors.amberAccent,
-
       ),
-
-
       body: new Container(
-
         child: new Text("data"),
-
       ),
-
     );
-
-
   }
 }
 
@@ -114,6 +93,14 @@ class _MapScreenState extends State<MapScreen> {
   );
 
   GoogleMapController _googleMapController;
+  Set<Marker> _markers = {
+    Marker(
+      markerId: MarkerId('id'),
+      position: LatLng(32.8985182, 13.2203355),
+      infoWindow: InfoWindow(title: 'شيل ابو سته', snippet: '*'),
+      onTap: () {},
+    )
+  };
   Marker _origin;
   Marker _destination;
   Directions _info;
@@ -122,6 +109,16 @@ class _MapScreenState extends State<MapScreen> {
   void dispose() {
     _googleMapController.dispose();
     super.dispose();
+  }
+
+  _getLocation() async {
+    var newPosition =
+        CameraPosition(target: LatLng(32.8985182, 13.2203355), zoom: 16);
+
+    CameraUpdate update = CameraUpdate.newCameraPosition(newPosition);
+    // CameraUpdate zoom = CameraUpdate.zoomTo(16);
+
+    _googleMapController.animateCamera(update);
   }
 
   @override
@@ -138,19 +135,18 @@ class _MapScreenState extends State<MapScreen> {
       children: <Widget>[
         drawerHeader,
         ListTile(
-            title: const Text('To page 1'),
-            onTap: () { var router = new MaterialPageRoute(
-                builder: (BuildContext context) => MapScreen());
-            Navigator.of(context).push(router);}
-
-        ),
+            title: const Text('محطة ابوسته'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Future.delayed(Duration(milliseconds: 450), () => _getLocation());
+            }),
         ListTile(
-          title: const Text('To page 2'),
-          onTap: () { var router = new MaterialPageRoute(
-            builder: (BuildContext context) => _NewPage());
-          Navigator.of(context).push(router);}
-
-        ),
+            title: const Text('To page 2'),
+            onTap: () {
+              var router = new MaterialPageRoute(
+                  builder: (BuildContext context) => _NewPage());
+              Navigator.of(context).push(router);
+            }),
         ListTile(
           title: const Text('other drawer item'),
           onTap: () {},
@@ -158,10 +154,9 @@ class _MapScreenState extends State<MapScreen> {
       ],
     );
     return Scaffold(
-        drawer: Drawer(
-          child: drawerItems,
-        ),
-
+      drawer: Drawer(
+        child: drawerItems,
+      ),
       appBar: AppBar(
         centerTitle: false,
         title: const Text('Google Maps'),
@@ -211,7 +206,7 @@ class _MapScreenState extends State<MapScreen> {
             initialCameraPosition: _initialCameraPosition,
             onMapCreated: (controller) => _googleMapController = controller,
             markers: {
-              if (_origin != null) _origin,
+              if (_markers != null) ..._markers,
               if (_destination != null) _destination
             },
             polylines: {
@@ -306,5 +301,4 @@ class _MapScreenState extends State<MapScreen> {
       setState(() => _info = directions);
     }
   }
-
 }
